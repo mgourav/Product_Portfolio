@@ -50,6 +50,10 @@ Cryptography has always followed a "discover once, fix, move on" lifecycle — a
 - Not claiming production-grade detection accuracy — regex-based matching has real false positive/negative rates; this is explicit, not hidden
 - Not solving enterprise-scale concerns: multi-repo aggregation, dashboards, RBAC, suppression workflows
 
+## Positioning
+
+**Standalone tool, built for enterprises to integrate into their own pipelines** — not a feature bolted onto an existing SAST/SCA platform. The reasoning: a team evaluating PQC readiness shouldn't need to adopt a whole new security platform to get a continuous crypto-drift check; a CLI that drops into any CI pipeline in one config file has a much shorter path from "interesting" to "running on every PR." That also keeps the tool platform-agnostic — it doesn't compete with or depend on whatever SAST/SCA tooling an enterprise already has.
+
 ## Solution Overview
 
 Treat the crypto inventory **as code, not as a report** — versioned and diffed like a lockfile:
@@ -89,12 +93,11 @@ Treat the crypto inventory **as code, not as a report** — versioned and diffed
 |---|---|
 | Regex detection produces false positives/negatives vs. AST parsing | State the limitation explicitly in docs; this is a concept demo, not a production scanner |
 | "Vulnerable vs. safe" is a simplification — real urgency depends on key size, mode, and context (signing vs. key exchange) | Note it as a known simplification rather than silently overclaiming precision |
-| Unresolved positioning question: is this a standalone tool, or a feature that belongs inside existing SAST/SCA platforms? | Doesn't block building v1 — but worth naming, since it changes how this would be pitched if it became more than a portfolio piece |
 
 ## Milestones
 
 - [x] Problem framed, scope agreed (this document)
-- [ ] Core scanner + signature set (R1–R2)
+- [x] Core scanner + signature set (R1–R2) — `pqc_radar/scanner.py`, `pqc_radar/signatures.py`
 - [ ] Baseline + diff logic (R3–R4)
 - [ ] Report output (R5)
 - [ ] Sample app + CI example (R6–R7)

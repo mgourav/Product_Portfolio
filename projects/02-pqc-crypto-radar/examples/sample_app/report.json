@@ -1,0 +1,168 @@
+{
+  "generated_at": "2026-11-14T18:49:44.516993+00:00",
+  "tool_version": "0.1.0",
+  "repo_name": "sample-app",
+  "summary": {
+    "total_findings": 10,
+    "new_count": 3,
+    "existing_count": 7,
+    "resolved_count": 0,
+    "by_risk": {
+      "quantum-vulnerable": 4,
+      "quantum-safe-today": 4,
+      "pqc-ready": 2
+    },
+    "by_register_status": {
+      "unreviewed": 8,
+      "accepted": 1,
+      "expired-acceptance": 1
+    },
+    "unreviewed_count": 8,
+    "expired_acceptance_count": 1
+  },
+  "findings": [
+    {
+      "file": "src/Payments.java",
+      "line": 9,
+      "language": "java",
+      "algorithm": "RSA",
+      "risk": "quantum-vulnerable",
+      "note": "Shor's algorithm breaks RSA's integer-factorization assumption.",
+      "snippet": "KeyPairGenerator rsaGen = KeyPairGenerator.getInstance(\"RSA\");",
+      "fingerprint": "8a75211317492488",
+      "diff_status": "new",
+      "register_status": "unreviewed",
+      "register_entry": null
+    },
+    {
+      "file": "src/Payments.java",
+      "line": 10,
+      "language": "java",
+      "algorithm": "AES (key size unknown)",
+      "risk": "quantum-safe-today",
+      "note": "Cipher.getInstance reveals the mode, not the key length \u2014 verify the key size manually.",
+      "snippet": "Cipher aes = Cipher.getInstance(\"AES/GCM/NoPadding\");",
+      "fingerprint": "f7242e8a255f4265",
+      "diff_status": "new",
+      "register_status": "unreviewed",
+      "register_entry": null
+    },
+    {
+      "file": "src/Payments.java",
+      "line": 11,
+      "language": "java",
+      "algorithm": "SHA-256/384/512",
+      "risk": "quantum-safe-today",
+      "note": "Hash functions are not broken by Shor's; Grover's gives only a quadratic speedup.",
+      "snippet": "MessageDigest sha = MessageDigest.getInstance(\"SHA-256\");",
+      "fingerprint": "9f0a74aad1173f69",
+      "diff_status": "new",
+      "register_status": "unreviewed",
+      "register_entry": null
+    },
+    {
+      "file": "src/auth.py",
+      "line": 2,
+      "language": "python",
+      "algorithm": "RSA",
+      "risk": "quantum-vulnerable",
+      "note": "Shor's algorithm breaks RSA's integer-factorization assumption.",
+      "snippet": "from Crypto.PublicKey import RSA",
+      "fingerprint": "4d7036088d6ec28c",
+      "diff_status": "existing",
+      "register_status": "unreviewed",
+      "register_entry": null
+    },
+    {
+      "file": "src/auth.py",
+      "line": 9,
+      "language": "python",
+      "algorithm": "RSA",
+      "risk": "quantum-vulnerable",
+      "note": "Shor's algorithm breaks RSA's integer-factorization assumption.",
+      "snippet": "rsa_key = RSA.generate(2048)",
+      "fingerprint": "a1a2c4107932b2f7",
+      "diff_status": "existing",
+      "register_status": "accepted",
+      "register_entry": {
+        "fingerprint": "a1a2c4107932b2f7",
+        "ticket": "SEC-451",
+        "review_by": "2027-03-01",
+        "reason": "Active RSA-to-ML-KEM migration, see pqc_migration.py",
+        "accepted_on": "2026-11-14T18:49:11.821661+00:00"
+      }
+    },
+    {
+      "file": "src/auth.py",
+      "line": 10,
+      "language": "python",
+      "algorithm": "SHA-256/384/512",
+      "risk": "quantum-safe-today",
+      "note": "Hash functions are not broken by Shor's; Grover's gives only a quadratic speedup.",
+      "snippet": "digest = hashlib.sha256(b\"session-payload\").hexdigest()",
+      "fingerprint": "00fbaa5c55fa7d87",
+      "diff_status": "existing",
+      "register_status": "unreviewed",
+      "register_entry": null
+    },
+    {
+      "file": "src/legacy_transport.go",
+      "line": 9,
+      "language": "go",
+      "algorithm": "ECC/ECDSA",
+      "risk": "quantum-vulnerable",
+      "note": "Shor's algorithm breaks the elliptic-curve discrete-log assumption.",
+      "snippet": "ecdsa.GenerateKey(nil, nil)",
+      "fingerprint": "10a2e0e375ae6289",
+      "diff_status": "existing",
+      "register_status": "expired-acceptance",
+      "register_entry": {
+        "fingerprint": "10a2e0e375ae6289",
+        "ticket": "SEC-200",
+        "review_by": "2026-06-01",
+        "reason": "Legacy ECC transport, scheduled for removal",
+        "accepted_on": "2025-12-01T00:00:00+00:00"
+      }
+    },
+    {
+      "file": "src/legacy_transport.go",
+      "line": 10,
+      "language": "go",
+      "algorithm": "SHA-256/384/512",
+      "risk": "quantum-safe-today",
+      "note": "Hash functions are not broken by Shor's; Grover's gives only a quadratic speedup.",
+      "snippet": "sha256.New()",
+      "fingerprint": "d8f869d8afe044ce",
+      "diff_status": "existing",
+      "register_status": "unreviewed",
+      "register_entry": null
+    },
+    {
+      "file": "src/pqc_migration.py",
+      "line": 2,
+      "language": "python",
+      "algorithm": "ML-KEM/Kyber",
+      "risk": "pqc-ready",
+      "note": "NIST-standardized post-quantum KEM.",
+      "snippet": "from ml_kem import generate_keypair as kyber_keygen",
+      "fingerprint": "2dc2bd9220094a43",
+      "diff_status": "existing",
+      "register_status": "unreviewed",
+      "register_entry": null
+    },
+    {
+      "file": "src/pqc_migration.py",
+      "line": 3,
+      "language": "python",
+      "algorithm": "ML-DSA/Dilithium",
+      "risk": "pqc-ready",
+      "note": "NIST-standardized post-quantum signature scheme.",
+      "snippet": "from ml_dsa import generate_keypair as dilithium_keygen",
+      "fingerprint": "1d24136b552e19c1",
+      "diff_status": "existing",
+      "register_status": "unreviewed",
+      "register_entry": null
+    }
+  ],
+  "resolved": []
+}

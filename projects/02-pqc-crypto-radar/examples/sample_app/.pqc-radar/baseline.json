@@ -1,0 +1,76 @@
+{
+  "saved_at": "2026-11-14T18:49:07.846225+00:00",
+  "tool_version": "0.1.0",
+  "findings": [
+    {
+      "file": "src/auth.py",
+      "line": 2,
+      "language": "python",
+      "algorithm": "RSA",
+      "risk": "quantum-vulnerable",
+      "note": "Shor's algorithm breaks RSA's integer-factorization assumption.",
+      "snippet": "from Crypto.PublicKey import RSA",
+      "fingerprint": "4d7036088d6ec28c"
+    },
+    {
+      "file": "src/auth.py",
+      "line": 9,
+      "language": "python",
+      "algorithm": "RSA",
+      "risk": "quantum-vulnerable",
+      "note": "Shor's algorithm breaks RSA's integer-factorization assumption.",
+      "snippet": "rsa_key = RSA.generate(2048)",
+      "fingerprint": "a1a2c4107932b2f7"
+    },
+    {
+      "file": "src/auth.py",
+      "line": 10,
+      "language": "python",
+      "algorithm": "SHA-256/384/512",
+      "risk": "quantum-safe-today",
+      "note": "Hash functions are not broken by Shor's; Grover's gives only a quadratic speedup.",
+      "snippet": "digest = hashlib.sha256(b\"session-payload\").hexdigest()",
+      "fingerprint": "00fbaa5c55fa7d87"
+    },
+    {
+      "file": "src/legacy_transport.go",
+      "line": 9,
+      "language": "go",
+      "algorithm": "ECC/ECDSA",
+      "risk": "quantum-vulnerable",
+      "note": "Shor's algorithm breaks the elliptic-curve discrete-log assumption.",
+      "snippet": "ecdsa.GenerateKey(nil, nil)",
+      "fingerprint": "10a2e0e375ae6289"
+    },
+    {
+      "file": "src/legacy_transport.go",
+      "line": 10,
+      "language": "go",
+      "algorithm": "SHA-256/384/512",
+      "risk": "quantum-safe-today",
+      "note": "Hash functions are not broken by Shor's; Grover's gives only a quadratic speedup.",
+      "snippet": "sha256.New()",
+      "fingerprint": "d8f869d8afe044ce"
+    },
+    {
+      "file": "src/pqc_migration.py",
+      "line": 2,
+      "language": "python",
+      "algorithm": "ML-KEM/Kyber",
+      "risk": "pqc-ready",
+      "note": "NIST-standardized post-quantum KEM.",
+      "snippet": "from ml_kem import generate_keypair as kyber_keygen",
+      "fingerprint": "2dc2bd9220094a43"
+    },
+    {
+      "file": "src/pqc_migration.py",
+      "line": 3,
+      "language": "python",
+      "algorithm": "ML-DSA/Dilithium",
+      "risk": "pqc-ready",
+      "note": "NIST-standardized post-quantum signature scheme.",
+      "snippet": "from ml_dsa import generate_keypair as dilithium_keygen",
+      "fingerprint": "1d24136b552e19c1"
+    }
+  ]
+}

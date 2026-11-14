@@ -53,7 +53,7 @@ BE in Computer Science, SGSITS, Indore (2014–2018).
 
 | Project | Problem | Status |
 |---|---|---|
-| [`projects/02-pqc-crypto-radar/`](projects/02-pqc-crypto-radar) — **Crypto Radar** | Crypto inventory is a one-time audit; PQC migration needs continuous drift detection and audit-ready evidence. PRD approved for Phase 1 (single-repo scan + dashboard); build starting. | ✅ PRD approved, build starting |
+| [`projects/02-pqc-crypto-radar/`](projects/02-pqc-crypto-radar) — **Crypto Radar** | Crypto inventory is a one-time audit; PQC migration needs continuous drift detection and audit-ready evidence. PRD + architecture approved and built for Phase 1 (single-repo scan, baseline/diff, risk register, dashboard) — [see the working dashboard](projects/02-pqc-crypto-radar/examples/sample_app/dashboard.html). | ✅ Phase 1 built |
 | [`projects/01-nhi-discovery-gap/`](projects/01-nhi-discovery-gap) | Mapping what identity governance tools can and can't see for AI agents (the "remediation trust gap") | 🚧 Problem framing |
 
 See [`CHECKLIST.md`](CHECKLIST.md) for how this repo gets built out, and [`PROJECT_TEMPLATE.md`](PROJECT_TEMPLATE.md) for the format every project follows.

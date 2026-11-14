@@ -1,0 +1,18 @@
+{
+  "entries": {
+    "a1a2c4107932b2f7": {
+      "fingerprint": "a1a2c4107932b2f7",
+      "ticket": "SEC-451",
+      "review_by": "2027-03-01",
+      "reason": "Active RSA-to-ML-KEM migration, see pqc_migration.py",
+      "accepted_on": "2026-11-14T18:49:11.821661+00:00"
+    },
+    "10a2e0e375ae6289": {
+      "fingerprint": "10a2e0e375ae6289",
+      "ticket": "SEC-200",
+      "review_by": "2026-06-01",
+      "reason": "Legacy ECC transport, scheduled for removal",
+      "accepted_on": "2025-12-01T00:00:00+00:00"
+    }
+  }
+}

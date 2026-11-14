@@ -119,14 +119,25 @@ Treat the crypto inventory **as code, not as a report** — versioned, diffed, a
 
 - [x] Problem framed, personas and forcing functions pressure-tested, scope agreed
 - [x] **PRD approved for Phase 1** (single-repo scan → baseline/diff → risk register → dashboard)
-- [ ] Solution architecture plan for Phase 1 (next phase, separate approval)
-- [ ] Core scanner + signature set (R1–R2)
-- [ ] Baseline + diff + risk register (R3–R4)
-- [ ] Report + dashboard generation (R5)
-- [ ] Sample demo data (R7)
+- [x] Solution architecture plan for Phase 1 ([`ARCHITECTURE.md`](ARCHITECTURE.md)) — approved
+- [x] Core scanner + signature set (R1–R2) — `pqc_radar/scanner.py`, `pqc_radar/signatures.py`
+- [x] Baseline + diff + risk register (R3–R4) — `pqc_radar/baseline.py`, `pqc_radar/register.py`, with unit tests for both
+- [x] Report + dashboard generation (R5) — `pqc_radar/report.py`
+- [x] Sample demo data (R7) — [`examples/sample_app/`](examples/sample_app), including a pre-generated [`dashboard.html`](examples/sample_app/dashboard.html) you can open directly
 - [ ] **Phase 2 approval gate** — multi-repo rollup (R6) scoped above, not started
 - [ ] Fast-follows beyond Phase 2: CI example (R8), dependency parsing (R9)
 
+## Try it
+
+```bash
+cd projects/02-pqc-crypto-radar
+python3 -m unittest discover -s tests          # 14 tests, baseline diff + register expiry logic
+python3 -m pqc_radar scan examples/sample_app --repo-name sample-app --out report.json
+python3 -m pqc_radar dashboard report.json --out dashboard.html
+```
+
+Or just open the already-generated [`examples/sample_app/dashboard.html`](examples/sample_app/dashboard.html) — no setup required. It shows a realistic mixed state: 3 new unreviewed findings (simulating code added this sprint), one finding accepted as part of an active migration (ticket SEC-451, review-by 2027), and one accepted finding whose review date has already passed (ticket SEC-200) — which is exactly the "sanctioned debt becoming forgotten debt" scenario the risk register exists to catch.
+
 ---
 
-*Phase 1 of this PRD is approved. No solution design or code follows it until the solution architecture plan is itself reviewed and approved. Phase 2 (multi-repo) is scoped but not approved to build.*
+*Phase 1 is built and verified against the sample app. Phase 2 (multi-repo rollup) is scoped above but requires a separate approval before any code.*

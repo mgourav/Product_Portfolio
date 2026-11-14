@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Crypto Radar — sample-app</title>
+<style>
+  :root { color-scheme: light; }
+  body { font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+          margin: 0; padding: 32px; background: #fafafa; color: #1a1a1a; }
+  h1 { font-size: 22px; margin-bottom: 4px; }
+  .meta { color: #666; font-size: 13px; margin-bottom: 28px; }
+  .headline { padding: 16px 20px; border-radius: 8px; margin-bottom: 28px; font-size: 15px;
+               background: #fdecea;
+               border: 1px solid #c0392b; }
+  .grid { display: flex; gap: 32px; flex-wrap: wrap; margin-bottom: 32px; }
+  .card { background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 16px 20px; }
+  .card h2 { font-size: 14px; text-transform: uppercase; letter-spacing: 0.04em; color: #666; margin: 0 0 12px; }
+  table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid #eee; font-size: 13px; vertical-align: top; }
+  th { background: #f3f3f3; font-size: 12px; text-transform: uppercase; letter-spacing: 0.03em; color: #666; }
+  code { font-family: "SF Mono", Consolas, monospace; font-size: 12px; }
+  .snippet { color: #444; }
+  .pill { display: inline-block; padding: 2px 8px; border-radius: 10px; color: white; font-size: 11px; white-space: nowrap; }
+  .register-note { font-size: 11px; color: #888; margin-top: 2px; }
+  footer { margin-top: 32px; font-size: 12px; color: #999; }
+</style>
+</head>
+<body>
+  <h1>Crypto Radar — sample-app</h1>
+  <div class="meta">Generated 2026-11-14T18:49:44.516993+00:00 &middot; tool v0.1.0</div>
+
+  <div class="headline">8 finding(s) are unreviewed — not yet fixed, not yet accepted.
+     &middot; 1 accepted finding(s) have passed their review date.
+  </div>
+
+  <div class="grid">
+    <div class="card"><h2>Findings by risk category</h2><svg viewBox="0 0 420 132" width="420" height="132" xmlns="http://www.w3.org/2000/svg">
+            <text x="0" y="31.0" font-size="13" fill="#333">quantum-vulnerable</text>
+            <rect x="170" y="12" width="200" height="28" fill="#c0392b" rx="3"/>
+            <text x="378" y="31.0" font-size="13" fill="#333">4</text>
+        
+            <text x="0" y="71.0" font-size="13" fill="#333">quantum-safe-today</text>
+            <rect x="170" y="52" width="200" height="28" fill="#1e8449" rx="3"/>
+            <text x="378" y="71.0" font-size="13" fill="#333">4</text>
+        
+            <text x="0" y="111.0" font-size="13" fill="#333">pqc-ready</text>
+            <rect x="170" y="92" width="100" height="28" fill="#2874a6" rx="3"/>
+            <text x="278" y="111.0" font-size="13" fill="#333">2</text>
+        </svg></div>
+    <div class="card"><h2>Findings by register status</h2><svg viewBox="0 0 420 132" width="420" height="132" xmlns="http://www.w3.org/2000/svg">
+            <text x="0" y="31.0" font-size="13" fill="#333">unreviewed</text>
+            <rect x="170" y="12" width="200" height="28" fill="#c0392b" rx="3"/>
+            <text x="378" y="31.0" font-size="13" fill="#333">8</text>
+        
+            <text x="0" y="71.0" font-size="13" fill="#333">accepted</text>
+            <rect x="170" y="52" width="25" height="28" fill="#1e8449" rx="3"/>
+            <text x="203" y="71.0" font-size="13" fill="#333">1</text>
+        
+            <text x="0" y="111.0" font-size="13" fill="#333">expired-acceptance</text>
+            <rect x="170" y="92" width="25" height="28" fill="#d68910" rx="3"/>
+            <text x="203" y="111.0" font-size="13" fill="#333">1</text>
+        </svg></div>
+    <div class="card">
+      <h2>Scan summary</h2>
+      <table>
+        <tr><td>Total findings</td><td><strong>10</strong></td></tr>
+        <tr><td>New since baseline</td><td><strong>3</strong></td></tr>
+        <tr><td>Existing (in baseline)</td><td><strong>7</strong></td></tr>
+        <tr><td>Resolved since baseline</td><td><strong>0</strong></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <h2>Findings</h2>
+  <table>
+    <thead><tr><th>Location</th><th>Algorithm</th><th>Risk</th><th>Diff</th><th>Register</th><th>Snippet</th></tr></thead>
+    <tbody>
+    <tr>
+        <td><code>src/Payments.java:9</code></td>
+        <td>RSA</td>
+        <td><span class="pill" style="background:#c0392b">quantum-vulnerable</span></td>
+        <td><span class="pill" style="background:#8e44ad">new</span></td>
+        <td><span class="pill" style="background:#c0392b">unreviewed</span></td>
+        <td><code class="snippet">KeyPairGenerator rsaGen = KeyPairGenerator.getInstance(&quot;RSA&quot;);</code></td>
+    </tr>
+    
+    <tr>
+        <td><code>src/Payments.java:10</code></td>
+        <td>AES (key size unknown)</td>
+        <td><span class="pill" style="background:#1e8449">quantum-safe-today</span></td>
+        <td><span class="pill" style="background:#8e44ad">new</span></td>
+        <td><span class="pill" style="background:#c0392b">unreviewed</span></td>
+        <td><code class="snippet">Cipher aes = Cipher.getInstance(&quot;AES/GCM/NoPadding&quot;);</code></td>
+    </tr>
+    
+    <tr>
+        <td><code>src/Payments.java:11</code></td>
+        <td>SHA-256/384/512</td>
+        <td><span class="pill" style="background:#1e8449">quantum-safe-today</span></td>
+        <td><span class="pill" style="background:#8e44ad">new</span></td>
+        <td><span class="pill" style="background:#c0392b">unreviewed</span></td>
+        <td><code class="snippet">MessageDigest sha = MessageDigest.getInstance(&quot;SHA-256&quot;);</code></td>
+    </tr>
+    
+    <tr>
+        <td><code>src/auth.py:2</code></td>
+        <td>RSA</td>
+        <td><span class="pill" style="background:#c0392b">quantum-vulnerable</span></td>
+        <td><span class="pill" style="background:#607d8b">existing</span></td>
+        <td><span class="pill" style="background:#c0392b">unreviewed</span></td>
+        <td><code class="snippet">from Crypto.PublicKey import RSA</code></td>
+    </tr>
+    
+    <tr>
+        <td><code>src/auth.py:10</code></td>
+        <td>SHA-256/384/512</td>
+        <td><span class="pill" style="background:#1e8449">quantum-safe-today</span></td>
+        <td><span class="pill" style="background:#607d8b">existing</span></td>
+        <td><span class="pill" style="background:#c0392b">unreviewed</span></td>
+        <td><code class="snippet">digest = hashlib.sha256(b&quot;session-payload&quot;).hexdigest()</code></td>
+    </tr>
+    
+    <tr>
+        <td><code>src/legacy_transport.go:10</code></td>
+        <td>SHA-256/384/512</td>
+        <td><span class="pill" style="background:#1e8449">quantum-safe-today</span></td>
+        <td><span class="pill" style="background:#607d8b">existing</span></td>
+        <td><span class="pill" style="background:#c0392b">unreviewed</span></td>
+        <td><code class="snippet">sha256.New()</code></td>
+    </tr>
+    
+    <tr>
+        <td><code>src/pqc_migration.py:2</code></td>
+        <td>ML-KEM/Kyber</td>
+        <td><span class="pill" style="background:#2874a6">pqc-ready</span></td>
+        <td><span class="pill" style="background:#607d8b">existing</span></td>
+        <td><span class="pill" style="background:#c0392b">unreviewed</span></td>
+        <td><code class="snippet">from ml_kem import generate_keypair as kyber_keygen</code></td>
+    </tr>
+    
+    <tr>
+        <td><code>src/pqc_migration.py:3</code></td>
+        <td>ML-DSA/Dilithium</td>
+        <td><span class="pill" style="background:#2874a6">pqc-ready</span></td>
+        <td><span class="pill" style="background:#607d8b">existing</span></td>
+        <td><span class="pill" style="background:#c0392b">unreviewed</span></td>
+        <td><code class="snippet">from ml_dsa import generate_keypair as dilithium_keygen</code></td>
+    </tr>
+    
+    <tr>
+        <td><code>src/legacy_transport.go:9</code></td>
+        <td>ECC/ECDSA</td>
+        <td><span class="pill" style="background:#c0392b">quantum-vulnerable</span></td>
+        <td><span class="pill" style="background:#607d8b">existing</span></td>
+        <td><span class="pill" style="background:#d68910">expired-acceptance</span><div class="register-note">Ticket SEC-200 &middot; review by 2026-06-01 &middot; Legacy ECC transport, scheduled for removal</div></td>
+        <td><code class="snippet">ecdsa.GenerateKey(nil, nil)</code></td>
+    </tr>
+    
+    <tr>
+        <td><code>src/auth.py:9</code></td>
+        <td>RSA</td>
+        <td><span class="pill" style="background:#c0392b">quantum-vulnerable</span></td>
+        <td><span class="pill" style="background:#607d8b">existing</span></td>
+        <td><span class="pill" style="background:#1e8449">accepted</span><div class="register-note">Ticket SEC-451 &middot; review by 2027-03-01 &middot; Active RSA-to-ML-KEM migration, see pqc_migration.py</div></td>
+        <td><code class="snippet">rsa_key = RSA.generate(2048)</code></td>
+    </tr>
+    </tbody>
+  </table>
+
+  <footer>
+    Crypto Radar is a portfolio project demonstrating continuous PQC-readiness scanning.
+    Detection is regex-based and not a substitute for a full cryptographic risk assessment
+    — see the project README for documented limitations.
+  </footer>
+</body>
+</html>

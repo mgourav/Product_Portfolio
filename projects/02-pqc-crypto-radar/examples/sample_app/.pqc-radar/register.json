@@ -5,7 +5,7 @@
       "ticket": "SEC-451",
       "review_by": "2027-03-01",
       "reason": "Active RSA-to-ML-KEM migration, see pqc_migration.py",
-      "accepted_on": "2026-11-14T18:49:11.821661+00:00"
+      "accepted_on": "2026-11-14T18:59:43.544406+00:00"
     },
     "10a2e0e375ae6289": {
       "fingerprint": "10a2e0e375ae6289",

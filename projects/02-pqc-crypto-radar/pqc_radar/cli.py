@@ -5,7 +5,7 @@ surface exactly:
     pqc-radar scan <path> [--baseline FILE] [--register FILE]
                            [--save-baseline] [--out report.json]
                            [--fail-on-new] [--repo-name NAME]
-    pqc-radar accept <fingerprint> --ticket T --review-by YYYY-MM-DD [--reason TEXT]
+    pqc-radar accept <path> <fingerprint> --ticket T --review-by YYYY-MM-DD [--reason TEXT]
                       [--register FILE]
     pqc-radar dashboard <report.json> [--out dashboard.html]
 
@@ -14,6 +14,7 @@ script once installed.
 """
 
 import argparse
+import json
 import sys
 from pathlib import Path
 
@@ -34,12 +35,30 @@ def cmd_scan(args: argparse.Namespace) -> int:
     register_path = Path(args.register) if args.register else pqc_dir / "register.json"
     out_path = Path(args.out) if args.out else Path("report.json")
 
+    repo_name = args.repo_name or Path(scan_target).resolve().name
+
+    # Guard against the default --out (report.json in the current directory)
+    # silently clobbering a different repo's report — easy to hit by running
+    # `scan repoA` then `scan repoB` from the same terminal without
+    # remembering --out each time.
+    if out_path.exists():
+        try:
+            previous = report_mod.load_report(out_path)
+            if previous.get("repo_name") not in (None, repo_name):
+                print(
+                    f"Warning: {out_path} already contains a report for "
+                    f"{previous['repo_name']!r}, overwriting it with {repo_name!r}. "
+                    "Pass --out to keep separate reports per repo.",
+                    file=sys.stderr,
+                )
+        except Exception:
+            pass  # not a report we can introspect — fine, just overwrite as before
+
     current = scan_path(scan_target)
     existing_baseline = baseline_mod.load_baseline(baseline_path)
     diff_result = baseline_mod.diff(current, existing_baseline)
     reg = register_mod.load_register(register_path)
 
-    repo_name = args.repo_name or Path(scan_target).resolve().name
     rep = report_mod.build_report(current, diff_result, reg, repo_name=repo_name)
     report_mod.save_report(out_path, rep)
 
@@ -75,7 +94,27 @@ def cmd_scan(args: argparse.Namespace) -> int:
 
 
 def cmd_accept(args: argparse.Namespace) -> int:
-    register_path = Path(args.register)
+    # Same pattern as `scan`: a repo path, with the register location
+    # defaulted from it unless --register overrides. Previously this
+    # command required typing out the full --register file path by hand
+    # while `scan` figured it out from the repo path — same tool, two
+    # different mental models. Fixed to match.
+    register_path = Path(args.register) if args.register else _default_pqc_radar_dir(args.path) / "register.json"
+
+    # Soft check, not a hard failure: if a baseline exists for this repo and
+    # the fingerprint isn't in it, the user likely mistyped it (or it's a
+    # genuinely brand-new finding not yet baselined, which is legitimate —
+    # hence a warning, not a rejection).
+    baseline_path = _default_pqc_radar_dir(args.path) / "baseline.json"
+    known_fps = {f.fingerprint for f in (baseline_mod.load_baseline(baseline_path) or [])}
+    if known_fps and args.fingerprint not in known_fps:
+        print(
+            f"Warning: fingerprint {args.fingerprint!r} isn't in the baseline at {baseline_path}. "
+            "Double-check you copied it correctly from a scan report "
+            "(this is fine if it's a brand-new finding not yet baselined).",
+            file=sys.stderr,
+        )
+
     try:
         entry = register_mod.accept(
             register_path,
@@ -121,11 +160,13 @@ def build_parser() -> argparse.ArgumentParser:
     scan_p.set_defaults(func=cmd_scan)
 
     accept_p = sub.add_parser("accept", help="Mark a finding as a known, sanctioned, time-boxed risk.")
+    accept_p.add_argument("path", help="Path to the repository (same path you ran `scan` against) — "
+                                        "used to default the register location.")
     accept_p.add_argument("fingerprint", help="The finding's fingerprint, from a scan report.")
     accept_p.add_argument("--ticket", required=True, help="Tracking ticket/reference for this acceptance.")
     accept_p.add_argument("--review-by", required=True, help="ISO date (YYYY-MM-DD) this acceptance expires.")
     accept_p.add_argument("--reason", help="Optional free-text reason.")
-    accept_p.add_argument("--register", required=True, help="Path to the register file to update.")
+    accept_p.add_argument("--register", help="Path to register file (default: <path>/.pqc-radar/register.json).")
     accept_p.set_defaults(func=cmd_accept)
 
     dash_p = sub.add_parser("dashboard", help="Render a static HTML dashboard from a JSON report.")
@@ -139,7 +180,14 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
-    return args.func(args)
+    try:
+        return args.func(args)
+    except (FileNotFoundError, NotADirectoryError) as e:
+        print(f"Error: {e}", file=sys.stderr)
+        return 1
+    except json.JSONDecodeError as e:
+        print(f"Error: couldn't parse JSON — {e}", file=sys.stderr)
+        return 1
 
 
 if __name__ == "__main__":

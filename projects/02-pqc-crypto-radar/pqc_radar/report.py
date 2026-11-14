@@ -17,6 +17,17 @@ from pathlib import Path
 from .baseline import DiffResult, TOOL_VERSION
 from .register import RegisterEntry, RegisterStatus, status_for
 from .scanner import Finding
+from .signatures import Risk
+
+# Fixed display order for both summary dicts and chart rows. Previously
+# these dicts were built by iterating findings in scan order, so the same
+# risk category could appear in a different row position from one scan to
+# the next (and a category with zero findings would vanish from the chart
+# entirely rather than showing "0") — confusing for something meant to be
+# compared scan-over-scan. Always include every category, in this order,
+# whether or not the current scan has any findings in it.
+RISK_ORDER = [r.value for r in Risk]
+REGISTER_ORDER = [RegisterStatus.UNREVIEWED, RegisterStatus.EXPIRED_ACCEPTANCE, RegisterStatus.ACCEPTED]
 
 # Colors are deliberately plain/accessible rather than brand-matched — this
 # is a standalone tool, not styled after any one company's design system.
@@ -76,8 +87,8 @@ def build_report(
             "register_entry": entry.to_dict() if entry else None,
         })
 
-    risk_counts: dict[str, int] = {}
-    register_counts: dict[str, int] = {}
+    risk_counts: dict[str, int] = {r: 0 for r in RISK_ORDER}
+    register_counts: dict[str, int] = {s: 0 for s in REGISTER_ORDER}
     for f in findings_out:
         risk_counts[f["risk"]] = risk_counts.get(f["risk"], 0) + 1
         register_counts[f["register_status"]] = register_counts.get(f["register_status"], 0) + 1
@@ -120,10 +131,18 @@ def load_report(path: str | Path) -> dict:
 # Dashboard rendering
 # --------------------------------------------------------------------- #
 
-def _svg_bar_chart(counts: dict[str, int], colors: dict[str, str], width: int = 420, bar_height: int = 28) -> str:
+def _svg_bar_chart(counts: dict[str, int], colors: dict[str, str], order: list[str], width: int = 420, bar_height: int = 28) -> str:
     """A minimal horizontal bar chart, hand-rolled as inline SVG. No library,
-    no axes library — just enough to make the summary counts scannable."""
-    labels = [k for k in counts if counts[k] > 0] or list(counts.keys())
+    no axes library — just enough to make the summary counts scannable.
+
+    `order` is fixed and always fully shown — even a zero-count category
+    gets a row (with no bar at all, not a misleading minimum-width sliver).
+    An earlier version hid zero-count rows entirely and let row order drift
+    with scan encounter order, so the same category could appear, vanish,
+    or move between runs. Comparing a dashboard against last week's only
+    works if the rows don't rearrange themselves.
+    """
+    labels = [l for l in order if l in counts]
     max_count = max(counts.values(), default=0) or 1
     row_gap = 12
     height = len(labels) * (bar_height + row_gap) + row_gap
@@ -133,12 +152,13 @@ def _svg_bar_chart(counts: dict[str, int], colors: dict[str, str], width: int = 
     rows = []
     for i, label in enumerate(labels):
         count = counts.get(label, 0)
-        bar_w = int((count / max_count) * chart_width) if max_count else 0
+        bar_w = int((count / max_count) * chart_width) if count else 0
         y = row_gap + i * (bar_height + row_gap)
         color = colors.get(label, "#777")
+        bar = f'<rect x="{label_col_width}" y="{y}" width="{bar_w}" height="{bar_height}" fill="{color}" rx="3"/>' if bar_w > 0 else ""
         rows.append(f'''
             <text x="0" y="{y + bar_height / 2 + 5}" font-size="13" fill="#333">{escape(label)}</text>
-            <rect x="{label_col_width}" y="{y}" width="{max(bar_w, 2)}" height="{bar_height}" fill="{color}" rx="3"/>
+            {bar}
             <text x="{label_col_width + bar_w + 8}" y="{y + bar_height / 2 + 5}" font-size="13" fill="#333">{count}</text>
         ''')
 
@@ -173,8 +193,8 @@ def _finding_row(f: dict) -> str:
 def render_dashboard(report: dict) -> str:
     """Produces one self-contained HTML string — no external CSS/JS/fonts."""
     summary = report["summary"]
-    risk_chart = _svg_bar_chart(summary["by_risk"], RISK_COLORS)
-    register_chart = _svg_bar_chart(summary["by_register_status"], REGISTER_COLORS)
+    risk_chart = _svg_bar_chart(summary["by_risk"], RISK_COLORS, RISK_ORDER)
+    register_chart = _svg_bar_chart(summary["by_register_status"], REGISTER_COLORS, REGISTER_ORDER)
 
     # Sort findings so the things a compliance officer most needs to see
     # land at the top: unreviewed and expired-acceptance first.

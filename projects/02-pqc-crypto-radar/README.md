@@ -124,6 +124,7 @@ Treat the crypto inventory **as code, not as a report** — versioned, diffed, a
 - [x] Baseline + diff + risk register (R3–R4) — `pqc_radar/baseline.py`, `pqc_radar/register.py`, with unit tests for both
 - [x] Report + dashboard generation (R5) — `pqc_radar/report.py`
 - [x] Sample demo data (R7) — [`examples/sample_app/`](examples/sample_app), including a pre-generated [`dashboard.html`](examples/sample_app/dashboard.html) you can open directly
+- [x] **QA pass** — 8 bugs/usability issues found and fixed (see below); 19 unit tests, all passing
 - [ ] **Phase 2 approval gate** — multi-repo rollup (R6) scoped above, not started
 - [ ] Fast-follows beyond Phase 2: CI example (R8), dependency parsing (R9)
 
@@ -131,12 +132,28 @@ Treat the crypto inventory **as code, not as a report** — versioned, diffed, a
 
 ```bash
 cd projects/02-pqc-crypto-radar
-python3 -m unittest discover -s tests          # 14 tests, baseline diff + register expiry logic
+python3 -m unittest discover -s tests          # 19 tests: baseline diff, register expiry, path validation
 python3 -m pqc_radar scan examples/sample_app --repo-name sample-app --out report.json
 python3 -m pqc_radar dashboard report.json --out dashboard.html
 ```
 
 Or just open the already-generated [`examples/sample_app/dashboard.html`](examples/sample_app/dashboard.html) — no setup required. It shows a realistic mixed state: 3 new unreviewed findings (simulating code added this sprint), one finding accepted as part of an active migration (ticket SEC-451, review-by 2027), and one accepted finding whose review date has already passed (ticket SEC-200) — which is exactly the "sanctioned debt becoming forgotten debt" scenario the risk register exists to catch.
+
+## QA pass
+
+Before moving to Phase 2, the Phase 1 build was tested deliberately looking for ways to break it, not just re-reading the code. Eight issues found and fixed, two of them real correctness bugs rather than polish:
+
+| Severity | Issue | Fix |
+|---|---|---|
+| Critical | Scanning a mistyped/nonexistent path silently returned "0 findings, exit 0" — indistinguishable from a genuine clean scan. The worst failure mode a compliance tool can have. | `scan_path` now raises `FileNotFoundError`/`NotADirectoryError`; the CLI reports it cleanly and exits non-zero. |
+| High | The baseline diff collapsed findings into a `{fingerprint: Finding}` dict before classifying, silently dropping duplicate occurrences. If the same risky line was copy-pasted into 3 new places, the dashboard table correctly showed 3 new rows but the headline said "1 new finding." | `diff()` now classifies every occurrence by iterating the full lists, using fingerprints only for identity — not for deduplication. Regression tests added. |
+| High | Several Java/Python AES signatures required the key-size call on the *same line* as `getInstance`/`new` (e.g. `KeyGenerator.getInstance("AES")` + `.init(128)`). Splitting them across two lines — extremely common real-world style — produced zero detections. | Added fallback signatures (with negative lookahead to avoid double-firing) that flag these as "key size unknown" instead of missing them entirely. |
+| Medium | `scan` derives the register/baseline location from the repo path; `accept` required typing the full `--register` file path by hand — same tool, two inconsistent mental models. | `accept` now takes the repo path the same way `scan` does, defaulting the register location from it. |
+| Medium | Missing/corrupt report or baseline files surfaced as raw Python tracebacks. | Top-level error handling in the CLI prints a clean message and exits 1. |
+| Low | SVG charts drew a visible minimum-width bar even for zero-count categories, and hid a category entirely if it had zero findings — both misleading and inconsistent between scans. | Zero-count categories now always show as a labeled row with no bar; chart row order is fixed instead of scan-dependent. |
+| Low | `accept <fingerprint>` gave no feedback on a typo'd fingerprint — it would silently create a register entry that matches nothing. | Soft warning (not a hard failure, since a brand-new finding is legitimately not yet baselined) when the fingerprint isn't found in the repo's baseline. |
+
+All fixes verified with reproductions before and after, and covered by the test suite (19 tests, up from 14).
 
 ---
 

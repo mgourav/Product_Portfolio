@@ -101,8 +101,18 @@ def scan_path(root: str | Path, excludes: set[str] | None = None) -> list[Findin
     Walk `root` and return every cryptographic-algorithm finding across all
     supported source files, sorted for deterministic output (stable diffs
     and reports run-to-run).
+
+    Raises FileNotFoundError / NotADirectoryError for a bad path rather than
+    silently returning an empty list. A scan that never actually happened
+    must not look identical to a scan that happened and found nothing —
+    for a compliance tool, "0 findings" has to mean something.
     """
     root = Path(root).resolve()
+    if not root.exists():
+        raise FileNotFoundError(f"scan path does not exist: {root}")
+    if not root.is_dir():
+        raise NotADirectoryError(f"scan path is not a directory: {root}")
+
     excludes = excludes or DEFAULT_EXCLUDES
 
     all_findings: list[Finding] = []

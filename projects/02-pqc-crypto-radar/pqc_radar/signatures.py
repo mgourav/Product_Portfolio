@@ -70,6 +70,13 @@ SIGNATURES: list[Signature] = [
     Signature("AES-256", Risk.QUANTUM_SAFE_TODAY, "python",
               _rx(r"\bAES\.new\([^)]*\b(256|32)\b|algorithms\.AES256\b|algorithms\.AES\(.*256"),
               "Grover's algorithm only halves effective security, to 128 bits — still safe."),
+    # Fallback: AES.new(key, ...) where the key size isn't a literal in the
+    # call itself (key comes from a variable, env var, KDF output, etc.) —
+    # the two signatures above only match an explicit 128/256 literal, so
+    # this is the same class of gap as the Java KeyGenerator case above.
+    Signature("AES (key size unknown)", Risk.QUANTUM_SAFE_TODAY, "python",
+              _rx(r"\bAES\.new\((?![^)]*\b(128|16|256|32)\b)"),
+              "Key size isn't a literal in this call — it's determined by whatever variable is passed in. Verify manually."),
     Signature("SHA-256/384/512", Risk.QUANTUM_SAFE_TODAY, "python",
               _rx(r"\bhashlib\.sha(256|384|512)\b|hashes\.SHA(256|384|512)\(\)"),
               "Hash functions are not broken by Shor's; Grover's gives only a quadratic speedup."),
@@ -94,6 +101,15 @@ SIGNATURES: list[Signature] = [
     Signature("AES-256", Risk.QUANTUM_SAFE_TODAY, "java",
               _rx(r'KeyGenerator\.getInstance\(\s*"AES"\s*\).*?init\(\s*256\s*\)'),
               "Grover's algorithm only halves effective security, to 128 bits — still safe."),
+    # Fallback for KeyGenerator.getInstance("AES") when the matching .init(N)
+    # call is on a different line — very common real-world style, and one
+    # the two signatures above (which require init() on the SAME line) miss
+    # entirely, producing a false negative on real AES-128 usage. The
+    # negative lookahead keeps this from double-firing when init() *is* on
+    # the same line (the more precise signatures above already cover that).
+    Signature("AES (key size unknown)", Risk.QUANTUM_SAFE_TODAY, "java",
+              _rx(r'KeyGenerator\.getInstance\(\s*"AES"\s*\)(?!.*?init\(\s*(128|256)\s*\))'),
+              "init() wasn't visible on this same line, so the key size can't be read from this call alone — verify manually (e.g. a multi-line KeyGenerator/init pair)."),
     Signature("AES (key size unknown)", Risk.QUANTUM_SAFE_TODAY, "java",
               _rx(r'Cipher\.getInstance\(\s*"AES/[A-Za-z0-9]+/[A-Za-z0-9]+"\s*\)'),
               "Cipher.getInstance reveals the mode, not the key length — verify the key size manually."),

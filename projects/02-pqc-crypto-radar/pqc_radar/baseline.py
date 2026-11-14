@@ -58,15 +58,25 @@ def diff(current: list[Finding], baseline: list[Finding] | None) -> DiffResult:
     Classifies `current` findings against a (possibly absent) baseline by
     fingerprint. If there's no baseline yet, everything is "new" by
     definition — a first scan has nothing to compare against.
+
+    Deliberately iterates the full `current`/`baseline` lists rather than
+    collapsing into {fingerprint: Finding} dicts first. An earlier version
+    did that collapse, which silently dropped real occurrences whenever the
+    same risky line appeared more than once with an identical fingerprint
+    (e.g. the same RSA.generate(2048) call copy-pasted into three new
+    functions) — the dashboard's headline count would say "1 new finding"
+    while the table correctly showed 3 rows. Fingerprints still decide
+    *identity* (new vs. existing vs. resolved); they must not also decide
+    *how many times a finding is counted*.
     """
     if baseline is None:
         return DiffResult(new=list(current), existing=[], resolved=[])
 
-    baseline_by_fp = {f.fingerprint: f for f in baseline}
-    current_by_fp = {f.fingerprint: f for f in current}
+    baseline_fps = {f.fingerprint for f in baseline}
+    current_fps = {f.fingerprint for f in current}
 
-    new = [f for fp, f in current_by_fp.items() if fp not in baseline_by_fp]
-    existing = [f for fp, f in current_by_fp.items() if fp in baseline_by_fp]
-    resolved = [f for fp, f in baseline_by_fp.items() if fp not in current_by_fp]
+    new = [f for f in current if f.fingerprint not in baseline_fps]
+    existing = [f for f in current if f.fingerprint in baseline_fps]
+    resolved = [f for f in baseline if f.fingerprint not in current_fps]
 
     return DiffResult(new=new, existing=existing, resolved=resolved)

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-14T18:49:44.516993+00:00",
+  "generated_at": "2026-11-14T18:59:53.558788+00:00",
   "tool_version": "0.1.0",
   "repo_name": "sample-app",
   "summary": {
@@ -9,13 +9,14 @@
     "resolved_count": 0,
     "by_risk": {
       "quantum-vulnerable": 4,
+      "monitor": 0,
       "quantum-safe-today": 4,
       "pqc-ready": 2
     },
     "by_register_status": {
       "unreviewed": 8,
-      "accepted": 1,
-      "expired-acceptance": 1
+      "expired-acceptance": 1,
+      "accepted": 1
     },
     "unreviewed_count": 8,
     "expired_acceptance_count": 1
@@ -89,7 +90,7 @@
         "ticket": "SEC-451",
         "review_by": "2027-03-01",
         "reason": "Active RSA-to-ML-KEM migration, see pqc_migration.py",
-        "accepted_on": "2026-11-14T18:49:11.821661+00:00"
+        "accepted_on": "2026-11-14T18:59:43.544406+00:00"
       }
     },
     {

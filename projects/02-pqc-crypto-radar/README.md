@@ -4,7 +4,7 @@
 | | |
 |---|---|
 | **Author** | Gourav Mehta, Product Manager |
-| **Status** | ✅ **Approved — Phase 1 (R1–R5, single-repo).** Phase 2 (multi-repo rollup, R6) is scoped below but requires a separate approval once Phase 1 ships. |
+| **Status** | ✅ **Phase 1 (R1–R5, single-repo) shipped, QA'd, and closed.** Phase 2 (multi-repo rollup, R6) is scoped below but was **deliberately not started** — see [Competitive Landscape](#competitive-landscape-why-phase-2-stopped-here) below. |
 | **Last updated** | Nov 2026 |
 | **Related work** | Driving PQC and FIPS 140-3 transitions on Trellix's Data Security portfolio (see [root README](../../README.md)) — this project generalizes that problem outside any one company's codebase |
 
@@ -126,8 +126,9 @@ Treat the crypto inventory **as code, not as a report** — versioned, diffed, a
 - [x] Sample demo data (R7) — [`examples/sample_app/`](examples/sample_app), including a pre-generated [`dashboard.html`](examples/sample_app/dashboard.html) you can open directly
 - [x] **PR walkthrough** — [`examples/pr_walkthrough/`](examples/pr_walkthrough), four runnable scenarios (unsafe-only, safe-only, both-at-once, regression) across one evolving file, output captured from real runs
 - [x] **QA pass** — 8 bugs/usability issues found and fixed (see below); 19 unit tests, all passing
-- [ ] **Phase 2 approval gate** — multi-repo rollup (R6) scoped above, not started
-- [ ] Fast-follows beyond Phase 2: CI example (R8), dependency parsing (R9)
+- [x] **Competitive landscape research before Phase 2** — decision: don't build R6, see below
+- [ ] ~~Phase 2 approval gate — multi-repo rollup (R6)~~ — deliberately not pursued
+- [ ] ~~Fast-follows beyond Phase 2: CI example (R8), dependency parsing (R9)~~ — superseded by the landscape finding
 
 ## Try it
 
@@ -158,6 +159,20 @@ Before moving to Phase 2, the Phase 1 build was tested deliberately looking for 
 
 All fixes verified with reproductions before and after, and covered by the test suite (19 tests, up from 14).
 
+## Competitive landscape — why Phase 2 stopped here
+
+Before scoping Phase 2 (multi-repo rollup, R6) any further, I researched what already exists in this space rather than assuming the gap this PRD's "Why Now" section described was still open. It isn't, and the finding changes the plan:
+
+- **The detection approach Phase 1 uses (regex) is already outclassed by open-source tools.** [CBOMkit-hyperion](https://github.com/PQCA/sonar-cryptography) (the Sonar Cryptography Plugin, originally built by IBM Research and donated to the Linux Foundation's Post-Quantum Cryptography Alliance) does AST-based detection with type resolution across Java, Python, and Go, claiming 100% coverage of libraries like `pyca/cryptography`. GitHub's CodeQL ships high-precision, dataflow-based crypto queries (`py/weak-cryptographic-algorithm`, Java's RSA-without-OAEP check, Go's `weak-crypto-algorithm`) out of the box. A 2025 paper (*Cryptoscope*, arXiv:2503.19531) makes the direct case that regex-based detection becomes unreliable once a codebase interleaves multiple crypto types — the exact tradeoff this project's `signatures.py` documents and accepts.
+- **The CI-gate and CBOM-output pieces (R5, R8) already exist as finished open-source tools**, not just concepts: `cbomkit-action` is a GitHub Action that runs on PRs and emits CycloneDX CBOMs per module; CBOMkit itself ships a full web viewer, a database, and an OPA/Rego-based compliance policy engine.
+- **The multi-repo rollup idea (R6) is already being built and monetized.** [Keylens](https://github.com/keylens/cbom) is explicit that its open-source CLI is "built for single-repo developer use" with a stated commercial boundary for the multi-repo/enterprise case — i.e., the exact Phase 2 I scoped is already someone else's roadmap and business model.
+- **The "continuous, not static" framing this PRD's problem statement leans on also has real prior art** — [DynamicCBOM](https://github.com/SEG-UNIBE/DynamicCBOM) extracts a CBOM at runtime via eBPF with no code changes, and SafeLogic's commercial CPM product correlates CI/CD, runtime, and SIEM data into one continuously-updating cryptographic inventory.
+- **One piece genuinely doesn't appear bundled anywhere I found**: a finding-level, ticket-tracked risk acceptance that automatically re-surfaces once its review date lapses (this project's register, R4). That pattern is standard general GRC/SBOM exception-management practice, but I didn't find it wired into any crypto/CBOM-specific tool — CBOMkit's compliance layer checks policy compliance per-component, not "we already decided about *this specific finding*, and that decision expires."
+
+**Decision:** rather than build Phase 2 (R6, multi-repo rollup) on top of a detection engine that's already behind the open-source state of the art, I'm stopping here. Continuing to extend the home-grown regex scanner would mean re-deriving — with less rigor — what CBOMkit-hyperion and CodeQL already do with AST and dataflow analysis, maintained by IBM Research/Linux Foundation and GitHub respectively. That's not a good use of further build time on a project whose actual point is demonstrating product judgment, including the judgment to recognize when the right move is *not* building more.
+
+If I were taking this from portfolio project to something real, the honest next step isn't R6 — it's rebuilding on top of an existing detection engine (CodeQL or `cbomkit-lib`'s programmatic API) and keeping only the register/expiry/audit-trail layer as the actual differentiated piece, since that's the one gap the research didn't turn up a ready-made answer for.
+
 ---
 
-*Phase 1 is built and verified against the sample app. Phase 2 (multi-repo rollup) is scoped above but requires a separate approval before any code.*
+*Phase 1 is built, QA'd, and verified against the sample app and the PR walkthrough. Phase 2 was researched and deliberately not pursued — see above.*

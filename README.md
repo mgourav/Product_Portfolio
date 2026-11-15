@@ -62,5 +62,5 @@ See [`CHECKLIST.md`](CHECKLIST.md) for how this repo gets built out, and [`PROJE
 
 - LinkedIn: [linkedin.com/in/gourav-mehta-pm](https://www.linkedin.com/in/gourav-mehta-pm/)
 - Email: m.gourav0110@gmail.com
-- Blog: [Trellix Database Security 10.3 — New Insights & Support Coverage](https://www.trellix.com/blogs/platform/trellix-database-security-10-3-new-insights-support-coverage/)
-- Webinar: [Product webinar](https://www.youtube.com/watch?v=TyUdpKI5zME)
+- Featured write-up: [Trellix Database Security 10.3 — New Insights & Support Coverage](https://www.trellix.com/blogs/platform/trellix-database-security-10-3-new-insights-support-coverage/)
+- Speaking: [Product webinar](https://www.youtube.com/watch?v=TyUdpKI5zME)

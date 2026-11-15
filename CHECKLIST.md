@@ -4,9 +4,9 @@ A rolling plan for building this out. Update it as you go — a stale checklist 
 
 ## Phase 1 — Foundation (this week)
 - [x] Repo structure, root README, project template
-- [ ] Fill in LinkedIn/contact links in README.md
+- [x] Fill in LinkedIn/contact links in README.md
 - [ ] Write your bio in your own voice — the current draft is a starting point, not final copy
-- [ ] Set repo description and topics on GitHub (Settings → About)
+- [ ] Set repo description and topics on GitHub (Settings → About) — GitHub's own settings can't be changed from here; copy/paste text is in the latest chat reply
 
 ## Phase 2 — First real project (next 1-2 weeks)
 - [ ] Pick ONE problem you can actually ship something small against this week — not a 3-month plan

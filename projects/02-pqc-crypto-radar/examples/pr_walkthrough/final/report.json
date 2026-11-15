@@ -1,0 +1,130 @@
+{
+  "generated_at": "2026-11-15T05:31:10.477500+00:00",
+  "tool_version": "0.1.0",
+  "repo_name": "pr-walkthrough",
+  "summary": {
+    "total_findings": 7,
+    "new_count": 1,
+    "existing_count": 6,
+    "resolved_count": 0,
+    "by_risk": {
+      "quantum-vulnerable": 2,
+      "monitor": 0,
+      "quantum-safe-today": 1,
+      "pqc-ready": 4
+    },
+    "by_register_status": {
+      "unreviewed": 5,
+      "expired-acceptance": 1,
+      "accepted": 1
+    },
+    "unreviewed_count": 5,
+    "expired_acceptance_count": 1
+  },
+  "findings": [
+    {
+      "file": "src/payments_service.py",
+      "line": 16,
+      "language": "python",
+      "algorithm": "ML-DSA/Dilithium",
+      "risk": "pqc-ready",
+      "note": "NIST-standardized post-quantum signature scheme.",
+      "snippet": "from pqc_crypto import ml_dsa, ml_kem  # placeholder imports for post-quantum libraries",
+      "fingerprint": "f1fbf4aec90f0be4",
+      "diff_status": "existing",
+      "register_status": "unreviewed",
+      "register_entry": null
+    },
+    {
+      "file": "src/payments_service.py",
+      "line": 16,
+      "language": "python",
+      "algorithm": "ML-KEM/Kyber",
+      "risk": "pqc-ready",
+      "note": "NIST-standardized post-quantum KEM.",
+      "snippet": "from pqc_crypto import ml_dsa, ml_kem  # placeholder imports for post-quantum libraries",
+      "fingerprint": "bc87b8577793f80b",
+      "diff_status": "existing",
+      "register_status": "unreviewed",
+      "register_entry": null
+    },
+    {
+      "file": "src/payments_service.py",
+      "line": 21,
+      "language": "python",
+      "algorithm": "SHA-256/384/512",
+      "risk": "quantum-safe-today",
+      "note": "Hash functions are not broken by Shor's; Grover's gives only a quadratic speedup.",
+      "snippet": "return hashlib.sha256(payload).hexdigest()",
+      "fingerprint": "121a0b0fe3ac0c82",
+      "diff_status": "existing",
+      "register_status": "unreviewed",
+      "register_entry": null
+    },
+    {
+      "file": "src/payments_service.py",
+      "line": 27,
+      "language": "python",
+      "algorithm": "RSA",
+      "risk": "quantum-vulnerable",
+      "note": "Shor's algorithm breaks RSA's integer-factorization assumption.",
+      "snippet": "return rsa.generate_private_key(public_exponent=65537, key_size=2048)",
+      "fingerprint": "a28f3e538b59ee11",
+      "diff_status": "new",
+      "register_status": "expired-acceptance",
+      "register_entry": {
+        "fingerprint": "a28f3e538b59ee11",
+        "ticket": "SEC-900",
+        "review_by": "2026-10-01",
+        "reason": "RSA token signing retiring once ML-DSA receipt signing ships; tracked for removal.",
+        "accepted_on": "2026-11-15T05:31:10.015518+00:00"
+      }
+    },
+    {
+      "file": "src/payments_service.py",
+      "line": 32,
+      "language": "python",
+      "algorithm": "ML-KEM/Kyber",
+      "risk": "pqc-ready",
+      "note": "NIST-standardized post-quantum KEM.",
+      "snippet": "return ml_kem.encapsulate(peer_public_key)",
+      "fingerprint": "1b1613d8a47aae96",
+      "diff_status": "existing",
+      "register_status": "unreviewed",
+      "register_entry": null
+    },
+    {
+      "file": "src/payments_service.py",
+      "line": 38,
+      "language": "python",
+      "algorithm": "ECC/ECDSA/ECDH",
+      "risk": "quantum-vulnerable",
+      "note": "Shor's algorithm breaks the elliptic-curve discrete-log assumption.",
+      "snippet": "return ec.generate_private_key(ec.SECP256R1())",
+      "fingerprint": "d12901e1b18e9e0f",
+      "diff_status": "existing",
+      "register_status": "accepted",
+      "register_entry": {
+        "fingerprint": "d12901e1b18e9e0f",
+        "ticket": "SEC-905",
+        "review_by": "2026-12-15",
+        "reason": "Partner X's integration requires ECDSA until their own PQC migration lands.",
+        "accepted_on": "2026-11-15T05:31:10.281379+00:00"
+      }
+    },
+    {
+      "file": "src/payments_service.py",
+      "line": 43,
+      "language": "python",
+      "algorithm": "ML-DSA/Dilithium",
+      "risk": "pqc-ready",
+      "note": "NIST-standardized post-quantum signature scheme.",
+      "snippet": "return ml_dsa.sign(private_key, message)",
+      "fingerprint": "b0e2fdae6caa2b7f",
+      "diff_status": "existing",
+      "register_status": "unreviewed",
+      "register_entry": null
+    }
+  ],
+  "resolved": []
+}

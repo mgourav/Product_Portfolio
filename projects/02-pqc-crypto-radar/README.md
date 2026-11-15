@@ -124,6 +124,7 @@ Treat the crypto inventory **as code, not as a report** — versioned, diffed, a
 - [x] Baseline + diff + risk register (R3–R4) — `pqc_radar/baseline.py`, `pqc_radar/register.py`, with unit tests for both
 - [x] Report + dashboard generation (R5) — `pqc_radar/report.py`
 - [x] Sample demo data (R7) — [`examples/sample_app/`](examples/sample_app), including a pre-generated [`dashboard.html`](examples/sample_app/dashboard.html) you can open directly
+- [x] **PR walkthrough** — [`examples/pr_walkthrough/`](examples/pr_walkthrough), four runnable scenarios (unsafe-only, safe-only, both-at-once, regression) across one evolving file, output captured from real runs
 - [x] **QA pass** — 8 bugs/usability issues found and fixed (see below); 19 unit tests, all passing
 - [ ] **Phase 2 approval gate** — multi-repo rollup (R6) scoped above, not started
 - [ ] Fast-follows beyond Phase 2: CI example (R8), dependency parsing (R9)
@@ -138,6 +139,8 @@ python3 -m pqc_radar dashboard report.json --out dashboard.html
 ```
 
 Or just open the already-generated [`examples/sample_app/dashboard.html`](examples/sample_app/dashboard.html) — no setup required. It shows a realistic mixed state: 3 new unreviewed findings (simulating code added this sprint), one finding accepted as part of an active migration (ticket SEC-451, review-by 2027), and one accepted finding whose review date has already passed (ticket SEC-200) — which is exactly the "sanctioned debt becoming forgotten debt" scenario the risk register exists to catch.
+
+**Want to see it react to a sequence of PRs instead of one static snapshot?** [`examples/pr_walkthrough/`](examples/pr_walkthrough) runs four scenarios against one evolving file — an unsafe-only PR, a safe-only PR, a PR with both at once, and a regression where the same unsafe call comes back months later under a different engineer. Run `bash examples/pr_walkthrough/run_walkthrough.sh` or just read the walkthrough's README, which has every command and its real output already captured.
 
 ## QA pass
 
